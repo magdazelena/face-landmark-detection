@@ -7,7 +7,15 @@ import "@mediapipe/face_mesh";
 import Webcam from "react-webcam";
 import { drawMesh } from "./utils/drawMesh";
 
-const inputResolution = { width: 1080, height: 800 };
+const inputResolution = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+const videoConstraints = {
+  width: inputResolution.width,
+  height: inputResolution.height,
+  facingMode: "user",
+};
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
@@ -23,7 +31,7 @@ function App() {
     );
     setInterval(async () => {
       await detect(detector);
-    }, 100);
+    }, 1000 / 60);
   };
   const detect = async (net) => {
     if (
@@ -55,6 +63,7 @@ function App() {
         width={inputResolution.width}
         height={inputResolution.height}
         style={fullScreenStyles}
+        videoConstraints={videoConstraints}
       />
       <canvas
         ref={canvasRef}
@@ -70,7 +79,9 @@ export default App;
 
 const fullScreenStyles = {
   position: "absolute",
-  top: 0,
-  left: 0,
-  right: 0,
+  marginLeft: "auto",
+  marginRight: "auto",
+  textAlign: "center",
+  width: inputResolution.width,
+  height: inputResolution.height,
 };

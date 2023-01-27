@@ -1,16 +1,28 @@
 import React, { useRef } from "react";
-import * as tf from "@tensorflow/tfjs";
-import * as facemesh from "@tensorflow-models/facemesh";
+import "@tensorflow/tfjs";
+import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
+// Register WebGL backend.
+import "@tensorflow/tfjs-backend-webgl";
+import "@mediapipe/face_mesh";
 import Webcam from "react-webcam";
+import { drawMesh } from "./utils/drawMesh";
 
-const inputResolution = { width: 640, height: 480 };
+const inputResolution = { width: 1080, height: 800 };
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const runFacemesh = async () => {
-    const net = await facemesh.load({ inputResolution, scale: 0.8 });
+
+  const runDetector = async () => {
+    const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+    const detectorConfig = {
+      runtime: "tfjs",
+    };
+    const detector = await faceLandmarksDetection.createDetector(
+      model,
+      detectorConfig
+    );
     setInterval(async () => {
-      await detect(net);
+      await detect(detector);
     }, 100);
   };
   const detect = async (net) => {
@@ -29,18 +41,27 @@ function App() {
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
 
-      const face = net.estimateFaces(video);
+      const estimationConfig = { flipHorizontal: false };
+      const faces = await net.estimateFaces(video, estimationConfig);
+      const ctx = canvasRef.current.getContext("2d");
+      drawMesh(faces, ctx);
     }
   };
-  runFacemesh();
+  runDetector();
   return (
     <div>
       <Webcam
         ref={webcamRef}
         width={inputResolution.width}
         height={inputResolution.height}
+        style={fullScreenStyles}
       />
-      <canvas ref={canvasRef} style={fullScreenStyles} />
+      <canvas
+        ref={canvasRef}
+        width={inputResolution.width}
+        height={inputResolution.height}
+        style={fullScreenStyles}
+      />
     </div>
   );
 }
@@ -49,8 +70,6 @@ export default App;
 
 const fullScreenStyles = {
   position: "absolute",
-  width: "100vw",
-  height: "100vh",
   top: 0,
   left: 0,
   right: 0,

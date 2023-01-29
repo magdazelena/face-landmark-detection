@@ -31,7 +31,7 @@ function App() {
     );
     setInterval(async () => {
       await detect(detector);
-    }, 1000 / 60);
+    }, 100);
   };
   const detect = async (net) => {
     if (
@@ -52,7 +52,7 @@ function App() {
       const estimationConfig = { flipHorizontal: false };
       const faces = await net.estimateFaces(video, estimationConfig);
       const ctx = canvasRef.current.getContext("2d");
-      drawMesh(faces, ctx);
+      drawMesh(faces[0], ctx);
     }
   };
   runDetector();

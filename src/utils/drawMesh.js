@@ -1,25 +1,23 @@
 import { TRIANGULATION } from "./triangulation";
 
-export const drawMesh = (predictions, ctx) => {
-  if (predictions.length <= 0) return;
-
-  predictions.forEach((prediction) => {
-    const keyPoints = prediction.keypoints;
-    for (let i = 0; i < TRIANGULATION.length / 3; i++) {
-      const points = [
-        TRIANGULATION[i * 3],
-        TRIANGULATION[i * 3 + 1],
-        TRIANGULATION[i * 3 + 2],
-      ].map((index) => keyPoints[index]);
-      drawPath(ctx, points, true);
-    }
-    keyPoints.forEach((keyPoint) => {
-      ctx.beginPath();
-      ctx.arc(keyPoint.x, keyPoint.y, 1, 0, 3 * Math.PI);
-      ctx.fillStyle = "aqua";
-      ctx.fill();
-    });
-  });
+export const drawMesh = (prediction, ctx) => {
+  if (!prediction) return;
+  const keyPoints = prediction.keypoints;
+  if (!keyPoints) return;
+  for (let i = 0; i < TRIANGULATION.length / 3; i++) {
+    const points = [
+      TRIANGULATION[i * 3],
+      TRIANGULATION[i * 3 + 1],
+      TRIANGULATION[i * 3 + 2],
+    ].map((index) => keyPoints[index]);
+    drawPath(ctx, points, true);
+  }
+  for (let keyPoint of keyPoints) {
+    ctx.beginPath();
+    ctx.arc(keyPoint.x, keyPoint.y, 1, 0, 3 * Math.PI);
+    ctx.fillStyle = "aqua";
+    ctx.fill();
+  }
 };
 
 const drawPath = (ctx, points, closePath) => {

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 // Register WebGL backend.
@@ -19,42 +19,20 @@ const videoConstraints = {
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (
+      typeof webcamRef.current === "undefined" ||
+      webcamRef.current === null ||
+      webcamRef.current.video.readyState !== 4 ||
+      canvasRef.current === null
+    )
+      return;
+    if (loaded) return;
+    runDetector(webcamRef.current.video, canvasRef.current);
+    setLoaded(true);
+  }, [webcamRef, canvasRef, loaded]);
 
-  const runDetector = async () => {
-    const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
-    const detectorConfig = {
-      runtime: "tfjs",
-    };
-    const detector = await faceLandmarksDetection.createDetector(
-      model,
-      detectorConfig
-    );
-
-    const detect = async (net) => {
-      if (
-        typeof webcamRef.current !== "undefined" &&
-        webcamRef.current !== null &&
-        webcamRef.current.video.readyState === 4
-      ) {
-        const video = webcamRef.current.video;
-        const videoWidth = webcamRef.current.video.videoWidth;
-        const videoHeight = webcamRef.current.video.videoHeight;
-
-        webcamRef.current.video.width = videoWidth;
-        webcamRef.current.video.height = videoHeight;
-
-        canvasRef.current.width = videoWidth;
-        canvasRef.current.height = videoHeight;
-
-        const estimationConfig = { flipHorizontal: false };
-        const faces = await net.estimateFaces(video, estimationConfig);
-        const ctx = canvasRef.current.getContext("2d");
-        requestAnimationFrame(() => drawMesh(faces[0], ctx));
-        detect(detector);
-      }
-    };
-    detect(detector);
-  };
   runDetector();
   return (
     <div>
@@ -65,12 +43,16 @@ function App() {
         style={{ opacity: 0 }}
         videoConstraints={videoConstraints}
       />
-      <canvas
-        ref={canvasRef}
-        width={inputResolution.width}
-        height={inputResolution.height}
-        style={fullScreenStyles}
-      />
+      {loaded ? (
+        <canvas
+          ref={canvasRef}
+          width={inputResolution.width}
+          height={inputResolution.height}
+          style={fullScreenStyles}
+        />
+      ) : (
+        <header>Loading...</header>
+      )}
     </div>
   );
 }
@@ -84,4 +66,22 @@ const fullScreenStyles = {
   textAlign: "center",
   width: inputResolution.width,
   height: inputResolution.height,
+};
+const runDetector = async (video, canvas) => {
+  const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+  const detectorConfig = {
+    runtime: "tfjs",
+  };
+  const detector = await faceLandmarksDetection.createDetector(
+    model,
+    detectorConfig
+  );
+  const detect = async (net) => {
+    const estimationConfig = { flipHorizontal: false };
+    const faces = await net.estimateFaces(video, estimationConfig);
+    const ctx = canvas.getContext("2d");
+    requestAnimationFrame(() => drawMesh(faces[0], ctx));
+    detect(detector);
+  };
+  detect(detector);
 };

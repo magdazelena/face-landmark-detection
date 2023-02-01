@@ -4,6 +4,7 @@ export const drawMesh = (prediction, ctx) => {
   if (!prediction) return;
   const keyPoints = prediction.keypoints;
   if (!keyPoints) return;
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   for (let i = 0; i < TRIANGULATION.length / 3; i++) {
     const points = [
       TRIANGULATION[i * 3],

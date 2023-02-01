@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 // Register WebGL backend.
@@ -17,42 +17,32 @@ const videoConstraints = {
   facingMode: "user",
 };
 function App() {
-  const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    if (
-      typeof webcamRef.current === "undefined" ||
-      webcamRef.current === null ||
-      webcamRef.current.video.readyState !== 4 ||
-      canvasRef.current === null
-    )
-      return;
-    if (loaded) return;
-    runDetector(webcamRef.current.video, canvasRef.current);
-    setLoaded(true);
-  }, [webcamRef, canvasRef, loaded]);
 
-  runDetector();
+  const handleVideoLoad = (videoNode) => {
+    const video = videoNode.target;
+    if (video.readyState !== 4) return;
+    if (loaded) return;
+    runDetector(video, canvasRef.current);
+    setLoaded(true);
+  };
   return (
     <div>
       <Webcam
-        ref={webcamRef}
         width={inputResolution.width}
         height={inputResolution.height}
-        style={{ opacity: 0 }}
+        style={{ opacity: 0.1 }}
         videoConstraints={videoConstraints}
+        onLoadedData={handleVideoLoad}
       />
-      {loaded ? (
-        <canvas
-          ref={canvasRef}
-          width={inputResolution.width}
-          height={inputResolution.height}
-          style={fullScreenStyles}
-        />
-      ) : (
-        <header>Loading...</header>
-      )}
+      <canvas
+        ref={canvasRef}
+        width={inputResolution.width}
+        height={inputResolution.height}
+        style={fullScreenStyles}
+      />
+      {loaded ? <></> : <header>Loading...</header>}
     </div>
   );
 }

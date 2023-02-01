@@ -1,11 +1,10 @@
 import React, { useRef, useState } from "react";
 import "@tensorflow/tfjs";
-import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 // Register WebGL backend.
 import "@tensorflow/tfjs-backend-webgl";
 import "@mediapipe/face_mesh";
 import Webcam from "react-webcam";
-import { drawMesh } from "./utils/drawMesh";
+import { runDetector } from "./utils/detector";
 
 const inputResolution = {
   width: 1080,
@@ -32,7 +31,7 @@ function App() {
       <Webcam
         width={inputResolution.width}
         height={inputResolution.height}
-        style={{ opacity: 0.1 }}
+        style={{ visibility: "hidden", position: "absolute" }}
         videoConstraints={videoConstraints}
         onLoadedData={handleVideoLoad}
       />
@@ -40,7 +39,7 @@ function App() {
         ref={canvasRef}
         width={inputResolution.width}
         height={inputResolution.height}
-        style={fullScreenStyles}
+        style={{ position: "absolute" }}
       />
       {loaded ? <></> : <header>Loading...</header>}
     </div>
@@ -48,30 +47,3 @@ function App() {
 }
 
 export default App;
-
-const fullScreenStyles = {
-  position: "absolute",
-  marginLeft: "auto",
-  marginRight: "auto",
-  textAlign: "center",
-  width: inputResolution.width,
-  height: inputResolution.height,
-};
-const runDetector = async (video, canvas) => {
-  const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
-  const detectorConfig = {
-    runtime: "tfjs",
-  };
-  const detector = await faceLandmarksDetection.createDetector(
-    model,
-    detectorConfig
-  );
-  const detect = async (net) => {
-    const estimationConfig = { flipHorizontal: false };
-    const faces = await net.estimateFaces(video, estimationConfig);
-    const ctx = canvas.getContext("2d");
-    requestAnimationFrame(() => drawMesh(faces[0], ctx));
-    detect(detector);
-  };
-  detect(detector);
-};

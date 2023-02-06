@@ -2,7 +2,6 @@ export const drawMesh = (predictions, ctx) => {
   if (!predictions) return;
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   predictions.forEach((prediction) => {
-    console.log(prediction);
     const keyPoints = prediction.keypoints;
     if (!keyPoints) return;
 

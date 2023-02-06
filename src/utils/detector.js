@@ -1,19 +1,21 @@
-import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
+import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import { drawMesh } from "./drawMesh";
 export const runDetector = async (video, canvas) => {
-  const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+  const model = handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
     runtime: "tfjs",
+    maxHands: 2,
+    modelType: "lite",
   };
-  const detector = await faceLandmarksDetection.createDetector(
+  const detector = await handPoseDetection.createDetector(
     model,
     detectorConfig
   );
   const detect = async (net) => {
     const estimationConfig = { flipHorizontal: false };
-    const faces = await net.estimateFaces(video, estimationConfig);
+    const hands = await net.estimateHands(video, estimationConfig);
     const ctx = canvas.getContext("2d");
-    requestAnimationFrame(() => drawMesh(faces[0], ctx));
+    if (hands.length) requestAnimationFrame(() => drawMesh(hands, ctx));
     detect(detector);
   };
   detect(detector);

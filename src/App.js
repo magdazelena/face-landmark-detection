@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import "@tensorflow/tfjs";
 // Register WebGL backend.
 import "@tensorflow/tfjs-backend-webgl";
-import "@mediapipe/face_mesh";
+import "@mediapipe/hands";
 import Webcam from "react-webcam";
 import { runDetector } from "./utils/detector";
 

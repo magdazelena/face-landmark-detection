@@ -3,10 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mediapipe/face_mesh": "^0.4.1633559619",
-    "@tensorflow-models/face-detection": "^1.0.1",
-    "@tensorflow-models/face-landmarks-detection": "^1.0.2",
-    "@tensorflow-models/facemesh": "^0.0.5",
+    "@mediapipe/hands": "^0.4.1646424915",
+    "@tensorflow-models/hand-pose-detection": "^2.0.0",
     "@tensorflow/tfjs": "^4.2.0",
     "@tensorflow/tfjs-backend-webgl": "^4.2.0",
     "react": "^18.2.0",

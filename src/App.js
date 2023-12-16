@@ -16,8 +16,7 @@ const videoConstraints = {
 };
 function App() {
   const canvasRef = useRef(null);
-  const [loaded, setLoaded] = useState(false);
-
+  const [loaded, setLoaded] = useState(false); 
   const handleVideoLoad = (videoNode) => {
     const video = videoNode.target;
     if (video.readyState !== 4) return;
@@ -38,7 +37,7 @@ function App() {
         ref={canvasRef}
         width={inputResolution.width}
         height={inputResolution.height}
-        style={{ position: "absolute", backgroundColor: "grey" }}
+        style={{ position: "absolute", backgroundColor: "grey"}}
       />
       {loaded ? <></> : <header>Loading...</header>}
     </div>

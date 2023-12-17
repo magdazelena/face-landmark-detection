@@ -14,30 +14,20 @@ export const runDetector = async (canvas) => {
     // const fixedKeypoints = fixedKeypointIndices.map(
     //   (index) => framesData[0].keypoints[index]
     // );
-    const fixedKeypoints =  [
+    const fixedKeypoints = [
       {
-          "x": 10,
-          "y": 10,
-          "z": -12.479683710942279,
-          "name": "faceOval"
+        x: 586.2896147948742,
+        y: 356.33899416771237,
+        z: -17.46630358240438,
+        name: "leftEyebrow",
       },
       {
-          "x": 30,
-          "y": 30,
-          "z": -29.243376263203825
+        x: 587.5250814701762,
+        y: 344.1988440500188,
+        z: -19.890478982206805,
+        name: "leftEyebrow",
       },
-      {
-          "x": 50,
-          "y": 50,
-          "z": -25.002785689102
-      },
-      {
-          "x": 70,
-          "y": 70,
-          "z": -19.577282231938923,
-          "name": "lips"
-      }
-  ]
+    ];
     // console.log(`==>`,fixedKeypoints)
 
     const renderFrame = () => {
@@ -49,10 +39,8 @@ export const runDetector = async (canvas) => {
       ) {
         const currentKeypoints = framesData[frameIndex].keypoints;
         const offsets = fixedKeypoints.map((fixedKeypoint, i) => ({
-          offsetX:
-            fixedKeypoint.x - currentKeypoints[i].x,
-          offsetY:
-            fixedKeypoint.y - currentKeypoints[i].y,
+          offsetX: fixedKeypoint.x - currentKeypoints[10].x,
+          offsetY: fixedKeypoint.y - currentKeypoints[10].y,
         }));
 
         drawCallback(currentKeypoints, ctx, offsets);

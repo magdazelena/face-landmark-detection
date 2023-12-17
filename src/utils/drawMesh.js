@@ -33,6 +33,9 @@ export const drawMesh = (keypoints, ctx, offsets) => {
     ctx.fillStyle = "orange";
     ctx.lineWidth = 1;
     ctx.fill();
+    ctx.fillStyle = "yellow";
+    ctx.font = "10px Arial";
+    ctx.fillText(i.toString(), keyPoint.x + 5, keyPoint.y - 5);
   }
 };
 

@@ -1,20 +1,25 @@
-import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 import { drawMesh } from "./drawMesh";
-export const runDetector = async (video, canvas) => {
-  const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
-  const detectorConfig = {
-    runtime: "tfjs",
-  };
-  const detector = await faceLandmarksDetection.createDetector(
-    model,
-    detectorConfig
-  );
-  const detect = async (net) => {
-    const estimationConfig = { flipHorizontal: false };
-    const faces = await net.estimateFaces(video, estimationConfig);
-    const ctx = canvas.getContext("2d");
-    requestAnimationFrame(() => drawMesh(faces[0], ctx));
-    detect(detector);
-  };
-  detect(detector);
+import { framesData } from "./frames/frame_2";
+import { framesData_1 } from "./frames/frame_1";
+import { points } from "./frames/points";
+
+export const runDetector = async (canvas) => {
+  const ctx = canvas.getContext("2d");
+  function animate(frame) {
+    if (frame[0].keypoints !== null) {
+      let i = 0;
+      const delayIteration = 20;
+      function processIteration() {
+        drawMesh(frame[i].keypoints, ctx);
+        i = (i + 1) % frame.length;
+
+        setTimeout(processIteration, delayIteration);
+      }
+
+      processIteration();
+    } else {
+      drawMesh(frame[15].keypoints, ctx);
+    }
+  }
+  animate(points);
 };

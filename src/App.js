@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl";
-import "@mediapipe/face_mesh"; 
+import "@mediapipe/face_mesh";
 import { runDetector } from "./utils/detector";
 
 const inputResolution = {
@@ -22,7 +22,7 @@ function App() {
         ref={canvasRef}
         width={inputResolution.width}
         height={inputResolution.height}
-        style={{ position: "absolute", backgroundColor: "grey"}}
+        style={{ position: "absolute", backgroundColor: "grey" }}
       />
     </div>
   );

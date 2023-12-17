@@ -11,8 +11,10 @@ export const drawMesh = (keypoints, ctx, offsets) => {
       TRIANGULATION[i * 3 + 1],
       TRIANGULATION[i * 3 + 2],
     ].map((index) => ({
-      x: keypoints[index].x + (offsets[index] ? offsets[index].offsetX : 0),
-      y: keypoints[index].y + (offsets[index] ? offsets[index].offsetY : 0),
+      // x: keypoints[index].x + (offsets[index] ? offsets[index].offsetX : 0),
+      // y: keypoints[index].y + (offsets[index] ? offsets[index].offsetY : 0),
+      x: keypoints[index].x,
+      y: keypoints[index].y,
     }));
 
     drawPath(ctx, points);
@@ -20,12 +22,14 @@ export const drawMesh = (keypoints, ctx, offsets) => {
 
   for (let i = 0; i < keypoints.length; i++) {
     const keyPoint = keypoints[i];
-    const offset = offsets[i];
+    // const offset = offsets[i];
 
     ctx.beginPath();
     ctx.arc(
-      keyPoint.x + (offset ? offset.offsetX : 0),
-      keyPoint.y + (offset ? offset.offsetY : 0),
+      // keyPoint.x + (offset ? offset.offsetX : 0),
+      // keyPoint.y + (offset ? offset.offsetY : 0),
+      keyPoint.x,
+      keyPoint.y,
       1,
       0,
       3 * Math.PI
@@ -33,9 +37,16 @@ export const drawMesh = (keypoints, ctx, offsets) => {
     ctx.fillStyle = "orange";
     ctx.lineWidth = 1;
     ctx.fill();
-    ctx.fillStyle = "yellow";
+    function getRandomColor() {
+      const randomColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
+        Math.random() * 256
+      )}, ${Math.floor(Math.random() * 256)})`;
+      return randomColor;
+    }
+
+    ctx.fillStyle = getRandomColor();
     ctx.font = "10px Arial";
-    ctx.fillText(i.toString(), keyPoint.x + 5, keyPoint.y - 5);
+    // ctx.fillText(i.toString(), keyPoint.x + 5, keyPoint.y - 5);
   }
 };
 

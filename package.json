@@ -15,7 +15,7 @@
     "react-webcam": "^7.0.1"
   },
   "scripts": {
-    "start": "react-scripts --max-old-space-size=3000 start",
+    "start": "react-scripts start",
     "build": "react-scripts build"
   },
   "browserslist": {

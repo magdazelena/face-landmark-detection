@@ -1,23 +1,35 @@
 import { TRIANGULATION } from "./triangulation";
 
-export const drawMesh = (prediction, ctx) => {
-  if (!prediction) return;
-  const keyPoints = prediction;
-  // console.log(prediction.keypoints);
-  if (!keyPoints) return;
+export const drawMesh = (keypoints, ctx, offsets) => {
+  if (!keypoints) return;
+
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
   for (let i = 0; i < TRIANGULATION.length / 3; i++) {
     const points = [
       TRIANGULATION[i * 3],
       TRIANGULATION[i * 3 + 1],
       TRIANGULATION[i * 3 + 2],
-    ].map((index) => keyPoints[index]);
+    ].map((index) => ({
+      x: keypoints[index].x + (offsets[index] ? offsets[index].offsetX : 0),
+      y: keypoints[index].y + (offsets[index] ? offsets[index].offsetY : 0),
+    }));
 
     drawPath(ctx, points);
   }
-  for (let keyPoint of keyPoints) {
+
+  for (let i = 0; i < keypoints.length; i++) {
+    const keyPoint = keypoints[i];
+    const offset = offsets[i];
+
     ctx.beginPath();
-    ctx.arc(keyPoint.x, keyPoint.y, 1, 0, 3 * Math.PI);
+    ctx.arc(
+      keyPoint.x + (offset ? offset.offsetX : 0),
+      keyPoint.y + (offset ? offset.offsetY : 0),
+      1,
+      0,
+      3 * Math.PI
+    );
     ctx.fillStyle = "orange";
     ctx.lineWidth = 1;
     ctx.fill();
@@ -32,6 +44,6 @@ const drawPath = (ctx, points) => {
     region.lineTo(point.x, point.y);
   }
   region.closePath();
-  ctx.stokeStyle = "blue";
+  ctx.strokeStyle = "#131419";
   ctx.stroke(region);
 };

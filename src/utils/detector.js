@@ -1,86 +1,74 @@
-import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 import { drawMesh } from "./drawMesh";
 import { framesData } from "./frames/frame_2";
 import { framesData_1 } from "./frames/frame_1";
 
+export const runDetector = async (canvas) => {
+  const fixedKeypointIndices = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+  const frameDelay = 100;
 
-export const runDetector = async (video, canvas, mySet) => {
-  const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
-  const detectorConfig = {
-    runtime: "tfjs",
-  };
-  const detector = await faceLandmarksDetection.createDetector(
-    model,
-    detectorConfig
-  );
+  const replayFrames = (canvas, framesData, drawCallback) => {
+    const ctx = canvas.getContext("2d");
+    let frameIndex = 0;
+    const startTime = performance.now();
 
-  let startTime = null;
-  let frames = [];
+    // const fixedKeypoints = fixedKeypointIndices.map(
+    //   (index) => framesData[0].keypoints[index]
+    // );
+    const fixedKeypoints =  [
+      {
+          "x": 10,
+          "y": 10,
+          "z": -12.479683710942279,
+          "name": "faceOval"
+      },
+      {
+          "x": 30,
+          "y": 30,
+          "z": -29.243376263203825
+      },
+      {
+          "x": 50,
+          "y": 50,
+          "z": -25.002785689102
+      },
+      {
+          "x": 70,
+          "y": 70,
+          "z": -19.577282231938923,
+          "name": "lips"
+      }
+  ]
+    // console.log(`==>`,fixedKeypoints)
 
-  // const detect = async (net) => {
-  //   const estimationConfig = { flipHorizontal: false };
-  //   const faces = await net.estimateFaces(video, estimationConfig);
+    const renderFrame = () => {
+      const elapsedTime = performance.now() - startTime;
 
-  //   const ctx = canvas.getContext("2d");
+      if (
+        frameIndex < framesData.length &&
+        elapsedTime >= framesData[frameIndex].time
+      ) {
+        const currentKeypoints = framesData[frameIndex].keypoints;
+        const offsets = fixedKeypoints.map((fixedKeypoint, i) => ({
+          offsetX:
+            fixedKeypoint.x - currentKeypoints[i].x,
+          offsetY:
+            fixedKeypoint.y - currentKeypoints[i].y,
+        }));
 
-  //   if (!startTime) {
-  //     startTime = performance.now();
-  //   }
+        drawCallback(currentKeypoints, ctx, offsets);
 
-  //   const elapsedTime = performance.now() - startTime;
-  //   const duration = 2000; 
+        frameIndex++;
+      }
 
-  //   frames.push({ time: elapsedTime, keypoints: faces[0].keypoints });
+      if (frameIndex === framesData.length) {
+        frameIndex = 0;
+      }
 
-  //   if (elapsedTime < duration) {
-  //     requestAnimationFrame(() => drawMesh(secound_animation, ctx));
-  //     detect(detector);
-  //   } else {
-  //     console.log("Captured 2 seconds of data:", frames);
-  //     startTime = null;
-  //     frames = [];
-    // }
-    
-    const fixedKeypointIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const frameDelay = 100;
+      setTimeout(renderFrame, frameDelay);
+    };
 
-const replayFrames = (canvas, framesData, drawCallback) => {
-  const ctx = canvas.getContext("2d");
-  let frameIndex = 0;
-  const startTime = performance.now();
-
-  const fixedKeypoints = fixedKeypointIndices.map((index) => framesData[0].keypoints[index]);
-
-  const renderFrame = () => {
-    const elapsedTime = performance.now() - startTime;
-
-    if (frameIndex < framesData.length && elapsedTime >= framesData[frameIndex].time) {
-      const currentKeypoints = framesData[frameIndex].keypoints;
-      const offsets = fixedKeypoints.map((fixedKeypoint, i) => ({
-        offsetX: fixedKeypoint.x - currentKeypoints[fixedKeypointIndices[i]].x,
-        offsetY: fixedKeypoint.y - currentKeypoints[fixedKeypointIndices[i]].y,
-      }));
-
-      drawCallback(currentKeypoints, ctx, offsets);
-
-      frameIndex++;
-    }
-
-    if (frameIndex === framesData.length) {
-      frameIndex = 0;
-    }
-
-    setTimeout(renderFrame, frameDelay);
+    renderFrame();
   };
 
-  renderFrame();
-};
-
-replayFrames(canvas, framesData, drawMesh);
-
-    
-
-    
-
-  detect(detector);
+  replayFrames(canvas, framesData, drawMesh);
 };
